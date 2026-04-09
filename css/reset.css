@@ -1,0 +1,9 @@
+/* Minimal reset */
+*,*::before,*::after{box-sizing:border-box}
+*{margin:0}
+html:focus-within{scroll-behavior:smooth}
+body{min-height:100vh;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;line-height:1.5}
+img,svg,picture{display:block;max-width:100%;height:auto}
+input,button,textarea,select{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+ul[role='list'],ol[role='list']{list-style:none;padding:0}

@@ -1,0 +1,48 @@
+:root{
+  --c-bg:#f1f4f8;
+  --c-surface:#ffffff;
+  --c-surface-2:#f6f8fb;
+  --c-surface-soft:rgba(255,255,255,.82);
+  --c-border:rgba(36,51,107,.12);
+  --c-border-strong:rgba(25,36,77,.18);
+  --c-muted:#6d7b96;
+  --c-accent-positive:#beffc7;
+  --c-accent-cta:#eb1e99;
+  --c-text:#19244d;
+  --c-text-soft:#556c8b;
+  --c-dark:#1f2022;
+  --c-panel:#24336b;
+  --c-panel-strong:#19244d;
+  --c-glow:rgba(190,255,199,.18);
+  --c-rose-glow:rgba(235,30,153,.08);
+  --c-sky-glow:rgba(167,182,201,.12);
+  --c-banner-bg:#24336b;
+  --c-banner-bg-strong:#1c2753;
+  --c-banner-surface:rgba(255,255,255,.07);
+  --c-banner-border:rgba(214,224,242,.16);
+  --c-banner-text:#f6f8ff;
+  --c-banner-muted:#c6d1e5;
+  --c-banner-divider:rgba(190,255,199,.24);
+
+  --ff-heading:"Montserrat", "Segoe UI", Arial, sans-serif;
+  --ff-body:"Montserrat", "Segoe UI", Arial, sans-serif;
+
+  --radius-sm:10px;
+  --radius-md:16px;
+  --radius-lg:28px;
+  --radius-xl:40px;
+  --shadow-soft:0 20px 44px rgba(25,36,77,.08);
+  --shadow-panel:0 30px 70px rgba(25,36,77,.12);
+  --shadow-strong:0 40px 100px rgba(25,36,77,.16);
+
+  --space-1:.5rem;
+  --space-2:.75rem;
+  --space-3:1rem;
+  --space-4:1.5rem;
+  --space-5:2rem;
+  --space-6:3rem;
+  --space-7:4rem;
+
+  --container:1200px;
+  --header-h:88px;
+}
