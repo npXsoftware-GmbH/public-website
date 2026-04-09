@@ -40,7 +40,6 @@
     --hero-box-feature-width: min(100%, 20rem);
     --hero-box-feature-height: clamp(15rem, 54vw, 18rem);
     min-height: calc(100svh - var(--header-h));
-    min-height: calc(100dvh - var(--header-h));
     display: grid;
     align-items: start;
     padding: clamp(5.5rem, 18svh, 8rem) 1rem 3rem;
@@ -364,7 +363,6 @@ html[data-header-context="compact"]
     --hero-box-feature-width: min(100%, 13.5rem);
     --hero-box-feature-height: clamp(10rem, 29vh, 12rem);
     min-height: calc(100svh - var(--header-h));
-    min-height: calc(100dvh - var(--header-h));
     display: grid;
     align-items: center;
     padding: 1rem 0 1.35rem;
@@ -766,7 +764,7 @@ html[data-header-context="compact"]
     font-size: 0.88rem;
   }
   .hero {
-    padding: clamp(5.2rem, 17dvh, 7.6rem) 0.8rem 2.8rem;
+    padding: clamp(5.2rem, 17svh, 7.6rem) 0.8rem 2.8rem;
   }
   .hero .section-kicker {
     display: none;
@@ -1279,7 +1277,7 @@ html[data-header-context="compact"]
     border-radius: 18px;
   }
   .hero {
-    padding: clamp(4.8rem, 16dvh, 6.8rem) 0.65rem 2.45rem;
+    padding: clamp(4.8rem, 16svh, 6.8rem) 0.65rem 2.45rem;
   }
   .hero-copy {
     width: 100%;
