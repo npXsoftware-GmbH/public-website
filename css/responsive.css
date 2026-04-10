@@ -330,7 +330,10 @@ html[data-header-context="compact"]
 
 @media (orientation: landscape) and (pointer: coarse) and (hover: none) and (max-height: 520px) {
   .container {
-    width: min(100% - 1.75rem, var(--container));
+    width: min(100% - 2.5rem, var(--container));
+    padding-inline: max(0.45rem, env(safe-area-inset-left))
+      max(0.45rem, env(safe-area-inset-right));
+    box-sizing: border-box;
   }
   .section {
     padding: clamp(1.75rem, 6vh, 2.4rem) 0;
@@ -365,7 +368,7 @@ html[data-header-context="compact"]
     min-height: calc(100svh - var(--header-h));
     display: grid;
     align-items: center;
-    padding: 1rem 0 1.35rem;
+    padding: 1rem clamp(0.4rem, 1.8vw, 0.9rem) 1.35rem;
   }
   .hero::after {
     content: "";
@@ -386,7 +389,7 @@ html[data-header-context="compact"]
   .hero .container.grid-2,
   .hero .hero-grid {
     min-height: 0;
-    padding-right: 0;
+    padding-inline: clamp(0.5rem, 1.5vw, 0.9rem);
     grid-template-columns: 1fr;
     gap: 32px;
     align-items: center;
@@ -475,26 +478,34 @@ html[data-header-context="compact"]
     font-size: clamp(1.5rem, 3vw, 2rem);
   }
   .solution-tabs {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    display: flex;
+    align-items: center;
+    position: relative;
     gap: 0.38rem;
     width: 100%;
     margin-inline: 0;
     padding: 0.22rem;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.78);
-    overflow: visible;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
     scroll-snap-type: none;
   }
+  .solution-tabs::-webkit-scrollbar {
+    display: none;
+  }
   .solution-tabs-shell {
-    width: min(100%, 60rem);
+    width: 100%;
     margin-inline: auto;
   }
   .solution-tab {
+    flex: 0 0 auto;
     min-height: 3rem;
     padding: 0.64rem 0.72rem;
     border-radius: 999px;
-    white-space: normal;
+    white-space: nowrap;
     line-height: 1.2;
   }
   .solution-stage {
@@ -504,19 +515,15 @@ html[data-header-context="compact"]
     display: none;
   }
   .solution-panel {
-    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
-    gap: 0;
+    grid-template-columns: 1fr;
+    gap: 0.72rem;
     min-height: 0;
-    align-items: stretch;
+    align-items: start;
     margin-top: 0.55rem;
     padding-top: 0;
   }
   .solution-panel .visual {
-    display: block;
-    grid-area: auto;
-    min-height: 15rem;
-    max-width: none;
-    width: 100%;
+    display: none;
   }
   .solution-visual-frame {
     height: 100%;
@@ -528,16 +535,16 @@ html[data-header-context="compact"]
     grid-area: auto;
     min-height: auto;
     justify-items: stretch;
-    align-items: center;
+    align-items: start;
     padding: 0;
   }
   .solution-copy-inner {
-    --solution-copy-overlap: clamp(3.6rem, 6vw, 1.6rem);
-    width: calc(100% + var(--solution-copy-overlap));
+    --solution-copy-overlap: 0rem;
+    width: 100%;
     max-width: none;
     gap: 0.52rem;
     justify-self: stretch;
-    transform: translateX(calc(var(--solution-copy-overlap) * -1));
+    transform: translate3d(0, var(--solution-copy-handoff-y), 0);
     padding: 1.08rem 1.08rem 1.12rem;
     margin-bottom: 0;
   }
@@ -595,8 +602,27 @@ html[data-header-context="compact"]
     gap: 1.1rem;
     padding: 0.65rem 0 0;
   }
-  .status-offers::after {
+  .status-offers::before {
     display: none;
+  }
+  .status-offers::after {
+    display: block;
+    content: "";
+    position: absolute;
+    top: 0.65rem;
+    bottom: 0;
+    left: var(--status-divider-x, 50%);
+    width: 1px;
+    transform: translateX(-50%);
+    background: linear-gradient(
+      180deg,
+      rgba(190, 255, 199, 0),
+      rgba(190, 255, 199, 0.14) 18%,
+      rgba(190, 255, 199, 0.24) 52%,
+      rgba(190, 255, 199, 0.14) 84%,
+      rgba(190, 255, 199, 0)
+    );
+    pointer-events: none;
   }
   .status-highlight,
   .contact-copy,

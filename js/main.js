@@ -913,6 +913,9 @@
   const compactHeaderContextMql = window.matchMedia(
     "(max-width: 900px) and (pointer: coarse), (orientation: landscape) and (pointer: coarse) and (hover: none) and (max-height: 520px)",
   );
+  const landscapeCompactHeaderMql = window.matchMedia(
+    "(orientation: landscape) and (pointer: coarse) and (hover: none) and (max-height: 520px)",
+  );
   const appleMobileSafariUa = window.navigator.userAgent;
   const isAppleMobileDevice =
     /iPhone|iPad|iPod/.test(appleMobileSafariUa) ||
@@ -1126,7 +1129,10 @@
       );
 
     const isPartnerHeaderMode = () =>
-      compactHeaderContextMql.matches && headerCta && statusSection;
+      compactHeaderContextMql.matches &&
+      !landscapeCompactHeaderMql.matches &&
+      headerCta &&
+      statusSection;
 
     const getActivePartnerHeaderCta = () => {
       if (!isPartnerHeaderMode()) return null;
