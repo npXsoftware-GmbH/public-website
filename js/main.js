@@ -12,14 +12,14 @@
     if (!bookingUrl) return;
     link.setAttribute("href", bookingUrl);
     link.setAttribute("target", "_blank");
-    link.setAttribute("rel", "noreferrer");
+    link.setAttribute("rel", "noopener noreferrer");
   });
 
   partnerLinks.forEach((link) => {
     if (!partnerUrl) return;
     link.setAttribute("href", partnerUrl);
     link.setAttribute("target", "_blank");
-    link.setAttribute("rel", "noreferrer");
+    link.setAttribute("rel", "noopener noreferrer");
   });
 
   bookingLabels.forEach((element) => {
@@ -106,7 +106,7 @@
       points: [
         "Sanktions- & Embargoprüfung",
         "Adverse Media",
-        "Bussiness Partner Risk",
+        "Business Partner Risk",
         "PEP",
         "AML",
         "VoP",
@@ -435,9 +435,14 @@
     }
 
     if (Array.isArray(data.points) && data.points.length > 0) {
-      targetPoints.innerHTML = data.points
-        .map((point) => `<li class="solution-bubble">${point}</li>`)
-        .join("");
+      targetPoints.replaceChildren(
+        ...data.points.map((point) => {
+          const item = document.createElement("li");
+          item.className = "solution-bubble";
+          item.textContent = point;
+          return item;
+        }),
+      );
       targetPoints.hidden = false;
       targetText.hidden = true;
       targetText.textContent = "";
@@ -907,14 +912,10 @@
   const hero = document.querySelector("#hero");
   const statusSection = document.querySelector("#status");
   const visualViewport = window.visualViewport ?? null;
-  const partnerHeaderCtaSources = [
-    ...document.querySelectorAll("#status [data-partner-cta]"),
-  ];
+  const partnerHeaderCtaSource =
+    document.querySelector("#status [data-partner-cta]") ?? null;
   const compactHeaderContextMql = window.matchMedia(
     "(max-width: 900px) and (pointer: coarse), (orientation: landscape) and (pointer: coarse) and (hover: none) and (max-height: 520px)",
-  );
-  const landscapeCompactHeaderMql = window.matchMedia(
-    "(orientation: landscape) and (pointer: coarse) and (hover: none) and (max-height: 520px)",
   );
   const appleMobileSafariUa = window.navigator.userAgent;
   const isAppleMobileDevice =
@@ -926,10 +927,6 @@
     /WebKit/i.test(appleMobileSafariUa) &&
     !/CriOS|FxiOS|EdgiOS|OPiOS|YaBrowser|DuckDuckGo/i.test(appleMobileSafariUa);
   const scrollActions = [...document.querySelectorAll("[data-scroll-target]")];
-  const statusOffers = document.querySelector("#status .status-offers");
-  const statusHighlights = statusOffers
-    ? [...statusOffers.querySelectorAll(".status-highlight")]
-    : [];
   const defaultHeaderCtaState = headerCta
     ? {
         key: "default",
@@ -1022,88 +1019,7 @@
     });
   });
 
-  function getTextBoundsX(element) {
-    if (!element) return null;
-
-    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
-    let minLeft = Number.POSITIVE_INFINITY;
-    let maxRight = Number.NEGATIVE_INFINITY;
-
-    while (walker.nextNode()) {
-      const node = walker.currentNode;
-      const value = node.textContent ?? "";
-      const firstVisibleCharIndex = value.search(/\S/);
-      if (firstVisibleCharIndex === -1) continue;
-
-      const lastVisibleCharIndex =
-        value.length - 1 - [...value].reverse().join("").search(/\S/);
-      if (lastVisibleCharIndex < firstVisibleCharIndex) continue;
-
-      const range = document.createRange();
-      range.setStart(node, firstVisibleCharIndex);
-      range.setEnd(node, lastVisibleCharIndex + 1);
-
-      const rects = range.getClientRects();
-      for (let i = 0; i < rects.length; i += 1) {
-        const rect = rects[i];
-        if (!Number.isFinite(rect.left) || !Number.isFinite(rect.right))
-          continue;
-        minLeft = Math.min(minLeft, rect.left);
-        maxRight = Math.max(maxRight, rect.right);
-      }
-    }
-
-    if (!Number.isFinite(minLeft) || !Number.isFinite(maxRight)) {
-      return null;
-    }
-
-    return { left: minLeft, right: maxRight };
-  }
-
-  function syncStatusDividerPosition() {
-    if (!statusOffers || statusHighlights.length < 2) return;
-
-    const leftList = statusHighlights[0].querySelector(".checklist");
-    const rightList = statusHighlights[1].querySelector(".checklist");
-
-    if (!leftList || !rightList) {
-      statusOffers.style.removeProperty("--status-divider-x");
-      return;
-    }
-
-    const leftBounds = getTextBoundsX(leftList);
-    const rightBounds = getTextBoundsX(rightList);
-
-    if (!leftBounds || !rightBounds || rightBounds.left <= leftBounds.right) {
-      statusOffers.style.removeProperty("--status-divider-x");
-      return;
-    }
-
-    const midpoint =
-      leftBounds.right + (rightBounds.left - leftBounds.right) / 2;
-    const offersRect = statusOffers.getBoundingClientRect();
-    const relativeMidpoint = midpoint - offersRect.left;
-
-    if (!Number.isFinite(relativeMidpoint)) {
-      statusOffers.style.removeProperty("--status-divider-x");
-      return;
-    }
-
-    statusOffers.style.setProperty(
-      "--status-divider-x",
-      `${relativeMidpoint}px`,
-    );
-  }
-
-  syncStatusDividerPosition();
-  window.addEventListener("resize", syncStatusDividerPosition);
-  window.addEventListener("load", syncStatusDividerPosition);
-  if (document.fonts?.ready) {
-    document.fonts.ready.then(syncStatusDividerPosition);
-  }
-
   if (siteHeader && hero) {
-    let headerCtaSwapTimer = 0;
     let activeHeaderCtaKey = defaultHeaderCtaState?.key ?? null;
 
     const syncHeaderContext = () => {
@@ -1128,42 +1044,43 @@
         document.body?.scrollTop ?? 0,
       );
 
-    const isPartnerHeaderMode = () =>
-      compactHeaderContextMql.matches &&
-      !landscapeCompactHeaderMql.matches &&
-      headerCta &&
-      statusSection;
+    const partnerHeaderCtaState =
+      headerCta && defaultHeaderCtaState
+        ? {
+            key: "partner",
+            mode: "partner",
+            label: "Partner werden",
+            href:
+              partnerUrl ||
+              partnerHeaderCtaSource?.getAttribute("href") ||
+              defaultHeaderCtaState.href,
+            target:
+              partnerHeaderCtaSource?.getAttribute("target") ||
+              defaultHeaderCtaState.target ||
+              "",
+            rel:
+              partnerHeaderCtaSource?.getAttribute("rel") ||
+              defaultHeaderCtaState.rel ||
+              "",
+          }
+        : null;
 
-    const getActivePartnerHeaderCta = () => {
-      if (!isPartnerHeaderMode()) return null;
-
+    const isPartnerCtaActive = () => {
+      if (!headerCta || !statusSection) return false;
       const headerHeight = siteHeader.getBoundingClientRect().height;
       const sectionRect = statusSection.getBoundingClientRect();
-      const sectionTopReachedHeader = sectionRect.top <= headerHeight;
-      const sectionBottomPastHeader = sectionRect.bottom > headerHeight;
+      const triggerOffset = 12;
 
-      if (!sectionTopReachedHeader || !sectionBottomPastHeader) return null;
-
-      const sectionMidpoint = sectionRect.top + sectionRect.height / 2;
-
-      return sectionMidpoint <= headerHeight
-        ? (partnerHeaderCtaSources[1] ?? partnerHeaderCtaSources[0] ?? null)
-        : (partnerHeaderCtaSources[0] ?? null);
+      return (
+        sectionRect.top <= headerHeight + triggerOffset &&
+        sectionRect.bottom > headerHeight
+      );
     };
 
-    const getHeaderCtaState = (source) => {
-      if (!source) return defaultHeaderCtaState;
-
-      const label = source.textContent.trim();
-
-      return {
-        key: label,
-        mode: "partner",
-        label,
-        href: source.getAttribute("href") ?? defaultHeaderCtaState.href,
-        target: source.getAttribute("target") ?? "",
-        rel: source.getAttribute("rel") ?? "",
-      };
+    const getHeaderCtaState = (isPartnerActive) => {
+      if (!defaultHeaderCtaState) return null;
+      if (isPartnerActive && partnerHeaderCtaState) return partnerHeaderCtaState;
+      return defaultHeaderCtaState;
     };
 
     const applyHeaderCtaState = (state) => {
@@ -1189,72 +1106,60 @@
       } else {
         headerCta.removeAttribute("data-header-cta-mode");
       }
+
+      headerCta.classList.remove("partner-program-cta");
+      headerCta.classList.add("btn-primary");
     };
 
-    const syncHeaderCtaContent = (source, { immediate = false } = {}) => {
+    const syncHeaderCtaContent = (isPartnerActive) => {
       if (!headerCta || !defaultHeaderCtaState) return;
-      const nextState = getHeaderCtaState(source);
+      const nextState = getHeaderCtaState(isPartnerActive);
 
       if (!nextState || nextState.key === activeHeaderCtaKey) return;
-
-      window.clearTimeout(headerCtaSwapTimer);
-
-      if (immediate) {
-        applyHeaderCtaState(nextState);
-        headerCta.classList.remove("is-content-swapping");
-        activeHeaderCtaKey = nextState.key;
-        return;
-      }
-
-      headerCta.classList.add("is-content-swapping");
-      headerCtaSwapTimer = window.setTimeout(() => {
-        applyHeaderCtaState(nextState);
-        activeHeaderCtaKey = nextState.key;
-        window.requestAnimationFrame(() => {
-          headerCta.classList.remove("is-content-swapping");
-        });
-      }, 110);
+      applyHeaderCtaState(nextState);
+      headerCta.classList.remove("is-content-swapping");
+      activeHeaderCtaKey = nextState.key;
     };
 
-    const syncHeaderCta = ({ immediateContent = false } = {}) => {
+    const syncHeaderCta = () => {
       const heroBottom = hero.getBoundingClientRect().bottom;
       const viewportHeight = visualViewport?.height ?? window.innerHeight;
       const threshold = compactHeaderContextMql.matches
         ? Math.max(viewportHeight * 0.16, 88)
         : Math.max(viewportHeight * 0.13, 96);
-      const activePartnerCta = getActivePartnerHeaderCta();
-      const isPinnedToTop = getPageScrollTop() <= 1 && !activePartnerCta;
+      const partnerActive = isPartnerCtaActive();
+      const isPinnedToTop = getPageScrollTop() <= 1 && !partnerActive;
+      const shouldShowCta =
+        !isPinnedToTop && (heroBottom < threshold || partnerActive);
 
-      syncHeaderCtaContent(activePartnerCta, {
-        immediate: immediateContent || isPinnedToTop,
-      });
-      siteHeader.classList.toggle(
-        "is-cta-visible",
-        !isPinnedToTop && (heroBottom < threshold || Boolean(activePartnerCta)),
-      );
+      syncHeaderCtaContent(partnerActive);
+      siteHeader.classList.toggle("is-cta-visible", shouldShowCta);
+      headerCta.classList.toggle("is-hidden-hard", !shouldShowCta);
     };
 
     syncHeaderContext();
-    syncHeaderCtaContent(null, { immediate: true });
-    syncHeaderCta({ immediateContent: true });
+    syncHeaderCtaContent(false);
+    syncHeaderCta();
     compactHeaderContextMql.addEventListener("change", () => {
       syncHeaderContext();
-      syncHeaderCta({ immediateContent: true });
+      syncHeaderCta();
     });
     window.addEventListener("scroll", syncHeaderCta, { passive: true });
     window.addEventListener("resize", () => {
-      syncHeaderCta({ immediateContent: true });
+      syncHeaderCta();
     });
-    window.addEventListener("scrollend", () => {
-      syncHeaderCta({ immediateContent: true });
-    });
+    if ("onscrollend" in window) {
+      window.addEventListener("scrollend", () => {
+        syncHeaderCta();
+      });
+    }
 
     if (visualViewport) {
       visualViewport.addEventListener("resize", () => {
-        syncHeaderCta({ immediateContent: true });
+        syncHeaderCta();
       });
       visualViewport.addEventListener("scroll", () => {
-        syncHeaderCta({ immediateContent: true });
+        syncHeaderCta();
       });
     }
   }
