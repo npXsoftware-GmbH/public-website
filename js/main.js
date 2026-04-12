@@ -210,12 +210,6 @@
   const mobileSolutionTabsMql = window.matchMedia(
     "(max-width: 900px) and (pointer: coarse)",
   );
-  const heroDesktopCardsMql = window.matchMedia("(min-width: 981px)");
-  const heroVisualRow = document.querySelector(".hero-visual-row");
-  const heroLeftCard =
-    heroVisualRow?.querySelector(".hero-placeholder-box:nth-child(1)") ?? null;
-  const heroRightCard =
-    heroVisualRow?.querySelector(".hero-placeholder-box:nth-child(3)") ?? null;
   let activeSolutionRequest = 0;
   let currentSolutionKey = null;
   let solutionTabIndicatorFrame = 0;
@@ -529,22 +523,6 @@
     });
   }
 
-  function syncHeroSideCardHeight() {
-    if (!heroVisualRow || !heroLeftCard || !heroRightCard) return;
-
-    if (!heroDesktopCardsMql.matches) {
-      heroVisualRow.style.removeProperty("--hero-side-card-height");
-      return;
-    }
-
-    const leftHeight = Math.ceil(heroLeftCard.getBoundingClientRect().height);
-    if (leftHeight < 1) return;
-    heroVisualRow.style.setProperty(
-      "--hero-side-card-height",
-      `${leftHeight}px`,
-    );
-  }
-
   function clearSolutionImageTransition() {
     window.clearTimeout(solutionImageSwapTimer);
     solutionImageSwapTimer = 0;
@@ -772,7 +750,6 @@
   document.fonts?.ready?.then(() => {
     queueSolutionTabIndicatorSync();
     queueSolutionCopyReserveHeightSync({ force: true });
-    syncHeroSideCardHeight();
   });
   if (typeof ResizeObserver === "function" && solutionTabsTrack) {
     const solutionTabsObserver = new ResizeObserver(() => {
@@ -791,17 +768,6 @@
     });
     solutionCopyObserver.observe(solutionCopy);
   }
-  if (typeof ResizeObserver === "function" && heroLeftCard) {
-    const heroSideCardsObserver = new ResizeObserver(() => {
-      syncHeroSideCardHeight();
-    });
-    heroSideCardsObserver.observe(heroLeftCard);
-  }
-  window.addEventListener("resize", syncHeroSideCardHeight);
-  if (typeof heroDesktopCardsMql.addEventListener === "function") {
-    heroDesktopCardsMql.addEventListener("change", syncHeroSideCardHeight);
-  }
-  syncHeroSideCardHeight();
   if (typeof mql.addEventListener === "function") {
     mql.addEventListener("change", () => {
       if (mql.matches) {

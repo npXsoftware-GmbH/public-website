@@ -1,20 +1,12 @@
 .hero {
   --hero-flow-chevron-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M472 256L332 116L287 161L382 256L287 351L332 396L472 256Z' fill='black'/%3E%3C/svg%3E");
   --hero-flow-width: 100%;
-  --hero-visual-offset: clamp(1rem, 2vw, 2rem);
-  --hero-visual-width: clamp(31rem, 40vw, 44rem);
-  --hero-visual-shift-left: clamp(0.8rem, 1.8vw, 1.8rem);
   --hero-visual-gap: clamp(1.1rem, 1.8vw, 1.8rem);
   --hero-box-width: clamp(12rem, 14vw, 15rem);
   --hero-box-height: clamp(15rem, 18vw, 18rem);
   --hero-box-feature-width: clamp(14rem, 16vw, 17.5rem);
   --hero-box-feature-height: clamp(18rem, 21vw, 21rem);
   --hero-bleed-max: var(--layout-bleed-max);
-  --hero-content-rail-offset: clamp(
-    0px,
-    calc((100vw - (var(--layout-content-max) + (var(--layout-edge) * 2))) / 2),
-    calc((var(--hero-bleed-max) - var(--layout-content-max)) / 2)
-  );
   position: relative;
   overflow-x: clip;
   padding: clamp(3.2rem, 7vw, 5.9rem) 0 clamp(3.6rem, 6vw, 5rem);
@@ -82,6 +74,7 @@
 .hero-copy {
   position: relative;
   z-index: 1;
+  min-width: 0;
   width: 100%;
   max-width: 560px;
 }
@@ -92,6 +85,7 @@
   transform: none;
   display: flex;
   justify-content: flex-start;
+  min-width: 0;
   width: 100%;
   max-width: none;
   overflow: visible;
@@ -174,9 +168,6 @@
 
   .hero {
     --hero-flow-width: min(100%, clamp(44rem, 56vw, 62rem));
-    --hero-visual-offset: clamp(1rem, 2vw, 2rem);
-    --hero-visual-width: clamp(31rem, 40vw, 44rem);
-    --hero-visual-shift-left: clamp(0.8rem, 1.8vw, 1.8rem);
     --hero-visual-gap: clamp(1.1rem, 1.8vw, 1.8rem);
     --hero-box-width: clamp(12rem, 14vw, 15rem);
     --hero-box-height: clamp(15rem, 18vw, 18rem);
@@ -202,36 +193,46 @@
     pointer-events: none;
   }
 
+  /*
+   * Desktop hero is intentionally a bounded two-track composition.
+   * Do not reintroduce content-rail offsets or right-anchored scaling here:
+   * the copy and visual columns must size against the same real width or the
+   * visual cluster will drift into the copy on wide screens and out of frame
+   * on mid-sized desktops.
+   */
   .hero .container.grid-2,
   .hero .hero-grid {
     display: grid;
-    grid-template-columns: minmax(0, 0.4fr) minmax(0, 0.6fr);
-    column-gap: clamp(0rem, 0.28vw, 0.3rem);
+    grid-template-columns: minmax(17rem, 34rem) minmax(32rem, 52rem);
+    justify-content: space-between;
+    column-gap: clamp(1.5rem, 3vw, 4rem);
     row-gap: 0;
-    width: min(100%, var(--hero-bleed-max));
+    width: min(calc(100% - (var(--layout-edge) * 2)), var(--hero-bleed-max));
     box-sizing: border-box;
-    padding-inline: max(var(--layout-edge), var(--hero-content-rail-offset));
+    padding-inline: 0;
     align-items: center;
   }
 
   .hero-copy {
     grid-column: 1;
-    width: min(100%, 36rem);
-    max-width: none;
+    width: 100%;
+    max-width: 34rem;
     justify-self: start;
   }
 
   .hero-visual {
     grid-column: 2;
     width: 100%;
-    justify-content: flex-end;
-    justify-self: stretch;
+    max-width: 52rem;
+    justify-content: center;
+    justify-self: end;
   }
 
   .hero-visual-row {
     justify-content: stretch;
     width: 100%;
-    max-width: 100%;
+    max-width: none;
+    margin-inline: 0;
     gap: calc(var(--hero-visual-gap) + 0.62rem);
   }
 
@@ -244,9 +245,6 @@
 
 @media (min-width: 981px) and (max-width: 1199px) {
   .hero {
-    --hero-visual-offset: clamp(0.35rem, 1.2vw, 1rem);
-    --hero-visual-width: min(44vw, 31rem);
-    --hero-visual-shift-left: clamp(0.5rem, 1.4vw, 1.2rem);
     --hero-visual-gap: clamp(0.95rem, 1.35vw, 1.25rem);
     --hero-box-width: clamp(9rem, 11vw, 11rem);
     --hero-box-height: clamp(11.5rem, 14vw, 13rem);
@@ -270,17 +268,17 @@
 
   .hero .container.grid-2,
   .hero .hero-grid {
-    grid-template-columns: minmax(0, 0.4fr) minmax(0, 0.6fr);
-    column-gap: clamp(0rem, 0.28vw, 0.3rem);
+    grid-template-columns: minmax(18rem, 35rem) minmax(36rem, 54rem);
+    column-gap: clamp(2rem, 3.4vw, 5rem);
   }
 
   .hero-copy {
     width: 100%;
-    max-width: 38rem;
+    max-width: 35rem;
   }
 
-  .hero .hero-visual-row {
-    width: 100%;
+  .hero-visual {
+    max-width: 54rem;
   }
 
   .hero .hero-glow {
@@ -297,8 +295,8 @@
 
   .hero .container.grid-2,
   .hero .hero-grid {
-    grid-template-columns: minmax(0, 0.4fr) minmax(0, 0.6fr);
-    column-gap: clamp(0rem, 0.28vw, 0.3rem);
+    grid-template-columns: minmax(16rem, 30rem) minmax(29rem, 42rem);
+    column-gap: clamp(1rem, 2vw, 2.25rem);
   }
 
   .hero h1 {
@@ -308,6 +306,30 @@
   .hero-lead {
     font-size: clamp(0.98rem, 0.72vw, 1.06rem);
     line-height: 1.55;
+  }
+
+  .hero-copy {
+    max-width: 30rem;
+  }
+
+  .hero-visual {
+    max-width: 42rem;
+  }
+}
+
+@media (min-width: 981px) and (max-width: 1180px) {
+  .hero .container.grid-2,
+  .hero .hero-grid {
+    grid-template-columns: minmax(15rem, 27rem) minmax(27rem, 38rem);
+    column-gap: clamp(0.75rem, 1.5vw, 1.5rem);
+  }
+
+  .hero-copy {
+    max-width: 27rem;
+  }
+
+  .hero-visual {
+    max-width: 38rem;
   }
 }
 
