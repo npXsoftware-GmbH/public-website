@@ -1068,12 +1068,16 @@
     const isPartnerCtaActive = () => {
       if (!headerCta || !statusSection) return false;
       const headerHeight = siteHeader.getBoundingClientRect().height;
+      const viewportHeight = visualViewport?.height ?? window.innerHeight;
       const sectionRect = statusSection.getBoundingClientRect();
-      const triggerOffset = 12;
+      const earlyTriggerLine = compactHeaderContextMql.matches
+        ? Math.max(viewportHeight * 0.58, headerHeight + 44)
+        : Math.max(viewportHeight * 0.52, headerHeight + 72);
+      const releaseLine = headerHeight + 24;
 
       return (
-        sectionRect.top <= headerHeight + triggerOffset &&
-        sectionRect.bottom > headerHeight
+        sectionRect.top <= earlyTriggerLine &&
+        sectionRect.bottom > releaseLine
       );
     };
 
@@ -1107,8 +1111,8 @@
         headerCta.removeAttribute("data-header-cta-mode");
       }
 
-      headerCta.classList.remove("partner-program-cta");
-      headerCta.classList.add("btn-primary");
+      headerCta.classList.toggle("partner-program-cta", state.mode === "partner");
+      headerCta.classList.toggle("btn-primary", state.mode !== "partner");
     };
 
     const syncHeaderCtaContent = (isPartnerActive) => {

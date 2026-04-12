@@ -44,5 +44,8 @@
   --space-7:4rem;
 
   --container:1200px;
+  --layout-content-max:var(--container);
+  --layout-edge:clamp(1rem,2vw,1.625rem);
+  --layout-bleed-max:1560px;
   --header-h:88px;
 }

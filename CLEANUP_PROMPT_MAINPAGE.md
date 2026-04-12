@@ -147,6 +147,7 @@ Prüfe:
 
 * Header-Verhalten
 * CTA-Klarheit und Platzierung
+* zustandsabhängige CTA-Logik und deren Styling
 * Scroll-Verhalten
 * Section-/Tab-Logik
 * Animationen (Stabilität, Timing, Notwendigkeit)
@@ -156,6 +157,12 @@ Prüfe:
 Maßnahme:
 → vereinfachen und stabilisieren
 → fragile Interaktionen reduzieren
+→ zustandsabhängige Varianten von CTAs, Buttons oder Header-Elementen nicht versehentlich vereinheitlichen
+
+Wichtig:
+→ wenn ein CTA je nach Kontext bewusst zwischen mehreren Zuständen wechselt (z. B. Standard-CTA vs. Partner-CTA), dann müssen Logik, Klassen und Styling dieser Varianten vollständig erhalten bleiben
+→ bei Refactoring oder Cleanup niemals einfach Klassen „vereinheitlichen“, wenn sie unterschiedliche visuelle oder funktionale Zustände abbilden
+→ solche Zustandswechsel nach Änderungen immer explizit mitprüfen
 
 ---
 
@@ -251,6 +258,7 @@ Entferne:
 * funktionierende Bereiche nicht unnötig umbauen
 * Accessibility-Verbesserungen bevorzugt nicht-visuell umsetzen
 * SEO-Verbesserungen müssen inhaltlich nachvollziehbar sein, nicht nur formal vorhanden
+* zustandsabhängige UI-Logik, insbesondere bei Header-CTAs, nicht durch Cleanup oder Vereinheitlichung regressieren lassen
 
 Bei Unsicherheit:
 → konservativere, stabilere Lösung wählen
